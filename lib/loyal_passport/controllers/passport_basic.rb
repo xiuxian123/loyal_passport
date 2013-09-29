@@ -63,15 +63,21 @@ module LoyalPassport::Controllers
 
       def impl_loyal_passport_request_init
         if user_signed_in?
-          cookies['user_signed_in'] = {
-            :value => '1',
-            :path => '/',
-            :domain => request.domain,
-            :expires => ::LoyalPassport.config.session_expire_after.to_i.seconds.from_now
-          }
+          _impl_set_user_signed_in_cookies('1')
         else
-          cookies.delete 'user_signed_in'
+          _impl_set_user_signed_in_cookies('-1')
         end
+      end
+
+      private
+
+      def _impl_set_user_signed_in_cookies value=nil
+        cookies['user_signed_in'] = {
+          :value => value,
+          :path => '/',
+          :domain => request.domain,
+          :expires => ::LoyalPassport.config.session_expire_after.to_i.seconds.from_now
+        }
       end
 
     end
