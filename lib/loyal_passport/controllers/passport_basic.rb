@@ -12,6 +12,8 @@ module LoyalPassport::Controllers
 
         include InstanceMethods
 
+        before_filter :impl_loyal_passport_request_init
+
         rescue_from ::CanCan::AccessDenied do |exception|
           # :redirect_to, 'http://www.ruby800.com', :alert => 'Access Denied'
           # :render, :text => 'Access Denied'
@@ -58,6 +60,19 @@ module LoyalPassport::Controllers
     end
 
     module InstanceMethods
+
+      def impl_loyal_passport_request_init
+        if user_signed_in?
+          cookies['user_signed_in'] = {
+            :value => '1',
+            :path => '/',
+            :domain => request.domain,
+            :expires => ::LoyalPassport.config.session_expire_after.to_i.seconds.from_now
+          }
+        else
+          cookies.delete 'user_signed_in'
+        end
+      end
 
     end
   end
